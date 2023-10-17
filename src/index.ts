@@ -9,32 +9,55 @@
   і властивістьsteps— це число викликів до знаходження паліндрома. Для того, щоб перевірити себе використовуйте число 196.
   Це так зване Lychrel number — число яке немає поліндрому*/
 
-
-
-  function isPalindrome(num: number): boolean {
-    const numStr = num.toString();
-    const reversedStr = numStr.split('').reverse().join('');
-    return numStr === reversedStr;
-  }
-  
-  function findNumericPalindrome(input: number): { results: number, steps: number } {
-    let steps = 0;
-    let currentNumber = input;
-  
-    while (!isPalindrome(currentNumber)) {
-      const numStr = currentNumber.toString();
-      const reversedStr = numStr.split('').reverse().join('');
-      currentNumber += parseInt(reversedStr, 10);
-      steps++;
+  function reverseString(str: string): string {
+    if (str.length === 0) {
+      return str;
+    } else {
+      return reverseString(str.slice(1)) + str[0];
     }
-  
-    return { results: currentNumber, steps };
   }
   
-  const inputNumber = 87; 
+  function findNumericPalindrome(input: number, steps = 0): { results: number, steps: number } {
+    const numStr = input.toString();
+    if (numStr === reverseString(numStr)) {
+      return { results: input, steps };
+    } else {
+      const reversedStr = reverseString(numStr);
+      const nextNumber = input + parseInt(reversedStr, 10);
+      return findNumericPalindrome(nextNumber, steps + 1);
+    }
+  }
+  
+  const inputNumber = 87;
   const { results, steps } = findNumericPalindrome(inputNumber);
   console.log(`Palindrome: ${results}`);
   console.log(`Number of steps: ${steps}`);
+  
+
+  // function isPalindrome(num: number): boolean {
+  //   const numStr = num.toString();
+  //   const reversedStr = numStr.split('').reverse().join('');
+  //   return numStr === reversedStr;
+  // }
+  
+  // function findNumericPalindrome(input: number): { results: number, steps: number } {
+  //   let steps = 0;
+  //   let currentNumber = input;
+  
+  //   while (!isPalindrome(currentNumber)) {
+  //     const numStr = currentNumber.toString();
+  //     const reversedStr = numStr.split('').reverse().join('');
+  //     currentNumber += parseInt(reversedStr, 10);
+  //     steps++;
+  //   }
+  
+  //   return { results: currentNumber, steps };
+  // }
+  
+  // const inputNumber = 87; 
+  // const { results, steps } = findNumericPalindrome(inputNumber);
+  // console.log(`Palindrome: ${results}`);
+  // console.log(`Number of steps: ${steps}`);
   
   
 
@@ -43,25 +66,51 @@
  функція має повернути масив, що містить[1, 2, 3],[1, 3, 2],[2, 1, 3],[2, 3, 1],[2, 3, 1],[3, 1, 2]і[3, 2, 1].*/
 
 
-function generatePermutations<T>(arr: T[]): T[][] {
+ function generatePermutations<T>(arr: T[]): T[][] {
   if (arr.length === 0) {
-    return [[]]; 
+    return [[]];
   }
 
   const permutations: T[][] = [];
 
-  for (let i = 0; i < arr.length; i++) {
-    const currentElement = arr[i];
-    const remainingElements = [...arr.slice(0, i), ...arr.slice(i + 1)];
-    const remainingPermutations = generatePermutations(remainingElements);
+  function permute(remainingElem: T[],  currentPerm: T[] = []) {
+    if (remainingElem.length === 0) {
+      permutations.push(currentPerm);
+      return;
+    }
 
-    for (const subPermutation of remainingPermutations) {
-      permutations.push([currentElement, ...subPermutation]);
+    for (let i = 0; i < remainingElem.length; i++) {
+      const newCurrentPerm = currentPerm.concat(remainingElem[i]);
+      const newremainingElem = remainingElem.slice(0, i).concat(remainingElem.slice(i + 1));
+      permute(newremainingElem, newCurrentPerm);
     }
   }
 
+  permute(arr);
+
   return permutations;
 }
+
+
 const uniqueElements = [1, 2, 3];
 const result = generatePermutations(uniqueElements);
 console.log(result);
+
+
+//   const permutations: T[][] = [];
+
+//   for (let i = 0; i < arr.length; i++) {
+//     const currentElement = arr[i];
+//     const remainingElements = [...arr.slice(0, i), ...arr.slice(i + 1)];
+//     const remainingPermutations = generatePermutations(remainingElements);
+
+//     for (const subPermutation of remainingPermutations) {
+//       permutations.push([currentElement, ...subPermutation]);
+//     }
+//   }
+
+//   return permutations;
+// }
+// const uniqueElements = [1, 2, 3];
+// const result = generatePermutations(uniqueElements);
+// console.log(result);
